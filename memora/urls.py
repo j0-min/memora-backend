@@ -22,8 +22,10 @@ from reminders.views import ReminderViewSet
 router = DefaultRouter()
 router.register('reminders', ReminderViewSet)
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/auth/', include('accounts.urls')),
     path('api/', include(router.urls)),
 ]
 
