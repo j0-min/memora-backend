@@ -4,5 +4,4 @@ from .models import Reminder
 class ReminderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reminder
-        fields = '__all__'
-
+        fields = ['id', 'title', 'time', 'is_active']

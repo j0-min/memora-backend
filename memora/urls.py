@@ -18,9 +18,14 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from reminders.views import ReminderViewSet
+from sos.views import SOSViewSet
+from location.views import LocationViewSet
 
 router = DefaultRouter()
-router.register('reminders', ReminderViewSet)
+
+router.register('reminders', ReminderViewSet, basename='reminder')
+router.register('sos', SOSViewSet, basename='sos')
+router.register('location', LocationViewSet, basename='location')
 
 
 urlpatterns = [
