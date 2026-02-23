@@ -9,12 +9,25 @@ class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
 
 
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims inside JWT token itself
+        token['is_patient'] = user.is_patient
+        token['is_caregiver'] = user.is_caregiver
+
+        return token
+
     def validate(self, attrs):
         data = super().validate(attrs)
 
-        data["is_patient"] = self.user.is_patient
-        data["is_caregiver"] = self.user.is_caregiver
+        # Also include role fields in response body
+        data['is_patient'] = self.user.is_patient
+        data['is_caregiver'] = self.user.is_caregiver
 
         return data
 
