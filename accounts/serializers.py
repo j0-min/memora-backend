@@ -6,14 +6,19 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'is_patient', 'is_caregiver')
+        fields = ('email', 'password', 'is_patient', 'is_caregiver')
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User already exists")
+        return value
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
+            username=validated_data['email'],  # use email as username
+            email=validated_data['email'],
             password=validated_data['password'],
             is_patient=validated_data.get('is_patient', False),
             is_caregiver=validated_data.get('is_caregiver', False),
         )
         return user
-
