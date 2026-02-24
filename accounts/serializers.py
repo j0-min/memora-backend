@@ -1,3 +1,4 @@
+
 from rest_framework import serializers
 from .models import User
 
@@ -15,7 +16,6 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['email'],  # use email as username
             email=validated_data['email'],
             password=validated_data['password'],
             is_patient=validated_data.get('is_patient', False),
