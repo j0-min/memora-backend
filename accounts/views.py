@@ -1,9 +1,10 @@
-from rest_framework import generics, serializers
+from rest_framework import generics
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from django.contrib.auth import authenticate
-from .models import User
+from django.contrib.auth import get_user_model
 from .serializers import RegisterSerializer
+
+User = get_user_model()
 
 
 # -------------------------
@@ -20,27 +21,19 @@ class RegisterView(generics.CreateAPIView):
 # -------------------------
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
-    username_field = 'email'   # IMPORTANT: tell JWT to use email
+
+    username_field = 'email'   # use email as login field
 
     def validate(self, attrs):
-        email = attrs.get("email")
-        password = attrs.get("password")
+        # Map email → username internally for JWT
+        attrs['username'] = attrs.get('email')
 
-        # Authenticate using email
-        user = authenticate(request=self.context.get("request"),
-                            email=email,
-                            password=password)
-
-        if user is None:
-            raise serializers.ValidationError("Invalid credentials")
-
-        # Generate token
         data = super().validate(attrs)
 
-        # Add extra fields to response
-        data['is_patient'] = user.is_patient
-        data['is_caregiver'] = user.is_caregiver
-        data['email'] = user.email
+        # Add extra fields
+        data['is_patient'] = self.user.is_patient
+        data['is_caregiver'] = self.user.is_caregiver
+        data['email'] = self.user.email
 
         return data
 
